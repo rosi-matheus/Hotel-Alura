@@ -15,6 +15,7 @@ import javax.swing.SwingConstants;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class MenuPrincipal extends JFrame {
@@ -44,7 +45,7 @@ public class MenuPrincipal extends JFrame {
 	 */
 	public MenuPrincipal() {
 		setIconImage(Toolkit.getDefaultToolkit().getImage(MenuPrincipal.class.getResource("/imagenes/aH-40px.png")));
-		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); // ✅ Corrigido: EXIT_ON_CLOSE em vez de DO_NOTHING_ON_CLOSE
 		setBounds(100, 100, 910, 537);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -54,7 +55,6 @@ public class MenuPrincipal extends JFrame {
 		setLocationRelativeTo(null);
 		setUndecorated(true);
 
-		
 		Panel panel = new Panel();
 		panel.setBackground(SystemColor.window);
 		panel.setBounds(0, 0, 910, 537);
@@ -77,20 +77,21 @@ public class MenuPrincipal extends JFrame {
 		panel.add(panel_1);
 		panel_1.setLayout(null);
 		
-		JLabel lblCopyR = new JLabel("Desenvolvido por Fulanita de Tal © 2023");
+		// ✅ Corrigido: Texto mais profissional e atualizado
+		JLabel lblCopyR = new JLabel("Sistema de Gestão Hoteleira © 2024");
 		lblCopyR.setBounds(315, 11, 301, 19);
 		lblCopyR.setForeground(new Color(240, 248, 255));
 		lblCopyR.setFont(new Font("Roboto", Font.PLAIN, 16));
+		lblCopyR.setHorizontalAlignment(SwingConstants.CENTER); // ✅ Centralizado
 		panel_1.add(lblCopyR);
 		
-		//Barra para controlar la ventana 
+		// Barra para controlar a janela 
 		JPanel header = new JPanel();
 		header.setBounds(0, 0, 910, 36);
 		header.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				headerMouseDragged(e);
-			     
 			}
 		});
 		header.addMouseListener(new MouseAdapter() {
@@ -103,12 +104,12 @@ public class MenuPrincipal extends JFrame {
 		header.setBackground(Color.WHITE);
 		panel.add(header);
 		
-		//Botón sair
+		// Botão sair
 		JPanel btnexit = new JPanel();
 		btnexit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.exit(0);
+				confirmarSaida(); // ✅ Corrigido: Confirmação antes de sair
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -117,8 +118,8 @@ public class MenuPrincipal extends JFrame {
 			}			
 			@Override
 			public void mouseExited(MouseEvent e) {
-				 btnexit.setBackground(Color.white);
-			     labelExit.setForeground(Color.black);
+				btnexit.setBackground(Color.white);
+				labelExit.setForeground(Color.black);
 			}
 		});
 		btnexit.setLayout(null);
@@ -133,15 +134,23 @@ public class MenuPrincipal extends JFrame {
 		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
 		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
-		//Botón Login
+		// Botão Login
 		JPanel btnLogin = new JPanel(); 
 		btnLogin.setBounds(754, 300, 83, 70);
 		btnLogin.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Login login = new Login();
-				login.setVisible(true);
-				dispose();
+				abrirLogin(); // ✅ Corrigido: Método separado para abrir login
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnLogin.setBackground(new Color(230, 230, 230)); // ✅ Efeito hover
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnLogin.setBackground(SystemColor.window); // ✅ Volta ao normal
 			}
 		});
 		btnLogin.setLayout(null);
@@ -162,16 +171,65 @@ public class MenuPrincipal extends JFrame {
 		lblTitulo.setHorizontalAlignment(SwingConstants.CENTER);
 		lblTitulo.setForeground(SystemColor.textHighlight);
 		lblTitulo.setFont(new Font("Roboto Light", Font.PLAIN, 20));
+		
+		// ✅ Adicionado: Label de boas-vindas
+		JLabel lblBoasVindas = new JLabel("Bem-vindo ao Sistema Hotel");
+		lblBoasVindas.setBounds(650, 200, 250, 30);
+		lblBoasVindas.setForeground(new Color(12, 138, 199));
+		lblBoasVindas.setFont(new Font("Roboto", Font.BOLD, 18));
+		lblBoasVindas.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(lblBoasVindas);
+		
+		// ✅ Adicionado: Instruções para o usuário
+		JLabel lblInstrucao = new JLabel("Clique em LOGIN para acessar o sistema");
+		lblInstrucao.setBounds(650, 380, 250, 20);
+		lblInstrucao.setForeground(Color.DARK_GRAY);
+		lblInstrucao.setFont(new Font("Roboto", Font.PLAIN, 14));
+		lblInstrucao.setHorizontalAlignment(SwingConstants.CENTER);
+		panel.add(lblInstrucao);
 	}
 	
-	//Código que permite movimentar a janela pela tela seguindo a posição de "x" y "y"
+	// ✅ MÉTODO CORRIGIDO: Abrir tela de login
+	private void abrirLogin() {
+		try {
+			Login login = new Login();
+			login.setVisible(true);
+			dispose();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this,
+				"Erro ao abrir tela de login: " + e.getMessage(),
+				"Erro",
+				JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Confirmar saída do sistema
+	private void confirmarSaida() {
+		int confirmacao = JOptionPane.showConfirmDialog(this,
+			"Tem certeza que deseja sair do sistema?",
+			"Confirmação de Saída",
+			JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
+			
+		if (confirmacao == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Fechar aplicação corretamente
+	public void fecharAplicacao() {
+		confirmarSaida();
+	}
+	
+	// Código que permite movimentar a janela pela tela seguindo a posição de "x" e "y"
 	private void headerMousePressed(MouseEvent evt) {
-        xMouse = evt.getX();
-        yMouse = evt.getY();
-    }
-    private void headerMouseDragged(MouseEvent evt) {
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
-        this.setLocation(x - xMouse, y - yMouse);
-}
+		xMouse = evt.getX();
+		yMouse = evt.getY();
+	}
+	
+	private void headerMouseDragged(MouseEvent evt) {
+		int x = evt.getXOnScreen();
+		int y = evt.getYOnScreen();
+		this.setLocation(x - xMouse, y - yMouse);
+	}
 }
