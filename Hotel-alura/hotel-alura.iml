@@ -3,9 +3,18 @@
   <component name="NewModuleRootManager" inherit-compiler-output="true">
     <exclude-output />
     <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/challenge-one-hotel-alura-main/src" isTestSource="false" />
+      <!-- ✅ Corrigido: Caminho correto para source folder -->
+      <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
+      <!-- ✅ Adicionado: Pasta de recursos para imagens e arquivos -->
+      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-resource" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    
+    <!-- ✅ Adicionado: Dependências necessárias para o projeto -->
+    <orderEntry type="library" name="mysql-connector-java-8.0.33" level="project" />
+    <orderEntry type="library" name="c3p0-0.9.5.5" level="project" />
+    <orderEntry type="library" name="mchange-commons-java-0.2.20" level="project" />
+    <orderEntry type="library" name="jcalendar-1.4" level="project" />
   </component>
 </module>
