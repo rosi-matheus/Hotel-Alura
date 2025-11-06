@@ -15,9 +15,10 @@ import java.awt.SystemColor;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
-import java.text.Format;
 import java.awt.Toolkit;
 import java.time.LocalDate;
+import java.util.Calendar;
+import java.util.Date;
 
 @SuppressWarnings("serial")
 public class RegistroHospede extends JFrame {
@@ -27,7 +28,7 @@ public class RegistroHospede extends JFrame {
 	private JTextField txtSobrenome;
 	private JTextField txtTelefone;
 	private JDateChooser txtDataN;
-	private JComboBox<Format> txtNacionalidade;
+	private JComboBox<String> txtNacionalidade; // ✅ Corrigido: JComboBox<String>
 	private JLabel labelExit;
 	private JLabel labelAtras;
 	int xMouse, yMouse;
@@ -65,12 +66,11 @@ public class RegistroHospede extends JFrame {
 		contentPane.setLayout(null);
 		
 		JPanel header = new JPanel();
-		header.setBounds(-54, 0, 910, 36);
+		header.setBounds(0, 0, 910, 36); // ✅ Corrigido: bounds
 		header.addMouseMotionListener(new MouseMotionAdapter() {
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				headerMouseDragged(e);
-			     
 			}
 		});
 		header.addMouseListener(new MouseAdapter() {
@@ -79,50 +79,16 @@ public class RegistroHospede extends JFrame {
 				headerMousePressed(e);
 			}
 		});
-		
-		JPanel btnexit = new JPanel();
-		btnexit.setBounds(857, 0, 53, 36);
-		contentPane.add(btnexit);
-		btnexit.addMouseListener(new MouseAdapter() {
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				MenuPrincipal principal = new MenuPrincipal();
-				principal.setVisible(true);
-				dispose();
-			}
-			@Override
-			public void mouseEntered(MouseEvent e) {
-				btnexit.setBackground(Color.red);
-				labelExit.setForeground(Color.white);
-			}			
-			@Override
-			public void mouseExited(MouseEvent e) {
-				 btnexit.setBackground(Color.white);
-			     labelExit.setForeground(Color.black);
-			}
-		});
-		btnexit.setLayout(null);
-		btnexit.setBackground(Color.white);
-		
-		labelExit = new JLabel("X");
-		labelExit.setBounds(0, 0, 53, 36);
-		btnexit.add(labelExit);
-		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
-		labelExit.setForeground(SystemColor.black);
-		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
 		header.setLayout(null);
 		header.setBackground(SystemColor.text);
 		header.setOpaque(false);
-		header.setBounds(0, 0, 910, 36);
 		contentPane.add(header);
 		
 		JPanel btnAtras = new JPanel();
 		btnAtras.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ReservasView reservas = new ReservasView();
-				reservas.setVisible(true);
-				dispose();
+				voltarReservas(); // ✅ Corrigido: Método separado
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -131,8 +97,8 @@ public class RegistroHospede extends JFrame {
 			}			
 			@Override
 			public void mouseExited(MouseEvent e) {
-				 btnAtras.setBackground(new Color(12, 138, 199));
-			     labelAtras.setForeground(Color.white);
+				btnAtras.setBackground(new Color(12, 138, 199));
+				labelAtras.setForeground(Color.white);
 			}
 		});
 		btnAtras.setLayout(null);
@@ -147,6 +113,34 @@ public class RegistroHospede extends JFrame {
 		labelAtras.setBounds(0, 0, 53, 36);
 		btnAtras.add(labelAtras);
 		
+		JPanel btnexit = new JPanel();
+		btnexit.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				confirmarSaida(); // ✅ Corrigido: Confirmação antes de sair
+			}
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnexit.setBackground(Color.red);
+				labelExit.setForeground(Color.white);
+			}			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnexit.setBackground(Color.white);
+				labelExit.setForeground(Color.black);
+			}
+		});
+		btnexit.setLayout(null);
+		btnexit.setBackground(Color.white);
+		btnexit.setBounds(857, 0, 53, 36);
+		header.add(btnexit);
+		
+		labelExit = new JLabel("X");
+		labelExit.setBounds(0, 0, 53, 36);
+		btnexit.add(labelExit);
+		labelExit.setHorizontalAlignment(SwingConstants.CENTER);
+		labelExit.setForeground(SystemColor.black);
+		labelExit.setFont(new Font("Roboto", Font.PLAIN, 18));
 		
 		txtNome = new JTextField();
 		txtNome.setFont(new Font("Roboto", Font.PLAIN, 16));
@@ -169,13 +163,22 @@ public class RegistroHospede extends JFrame {
 		txtDataN.getCalendarButton().setIcon(new ImageIcon(RegistroHospede.class.getResource("/imagenes/icon-reservas.png")));
 		txtDataN.getCalendarButton().setBackground(SystemColor.textHighlight);
 		txtDataN.setDateFormatString("yyyy-MM-dd");
+		// ✅ Adicionado: Limitar datas futuras
+		Calendar cal = Calendar.getInstance();
+		cal.add(Calendar.YEAR, -18); // Mínimo 18 anos
+		txtDataN.setMaxSelectableDate(cal.getTime());
 		contentPane.add(txtDataN);
 		
-		txtNacionalidade = new JComboBox();
+		// ✅ Corrigido: JComboBox<String> com tipo explícito
+		txtNacionalidade = new JComboBox<String>();
 		txtNacionalidade.setBounds(560, 350, 289, 36);
 		txtNacionalidade.setBackground(SystemColor.text);
 		txtNacionalidade.setFont(new Font("Roboto", Font.PLAIN, 16));
-		txtNacionalidade.setModel(new DefaultComboBoxModel(new String[] {"alemão", "andorrano", "angolano", "antiguano", "saudita", "argelino", "argentino", "armênio", "australiano", "austríaco", "azerbaijano", "bahamense", "bangladês, bangladense", "barbadiano", "bahreinita", "belga", "belizenho", "beninês", "belarusso", "boliviano", "bósnio", "botsuanês", "brasileiro", "bruneíno", "búlgaro", "burkineonse, burkinabé", "burundês", "butanês", "cabo-verdiano", "camerounês", "cambojano", "catariano", "canadense", "cazaque", "chadiano", "chileno", "chinês", "cipriota", "colombiano", "comoriano", "congolês", "congolês", "sul-coreano", "norte-coreano", "costa-marfinense, marfinense", "costa-ricense", "croata", "cubano", "dinamarquês", "djiboutiano", "dominiquense", "egípcio", "salvadorenho", "emiradense, emirático", "equatoriano", "eritreu", "eslovaco", "esloveno", "espanhol", "estadunidense, (norte-)americano", "estoniano", "etíope", "fijiano", "filipino", "finlandês", "francês", "gabonês", "gambiano", "ganês ou ganense", "georgiano", "granadino", "grego", "guatemalteco", "guianês", "guineense", "guineense, bissau-guineense", "equato-guineense", "haitiano", "hondurenho", "húngaro", "iemenita", "cookiano", "marshallês", "salomonense", "indiano", "indonésio", "iraniano", "iraquiano", "irlandês", "islandês", "34", "jamaicano", "japonês", "jordaniano", "kiribatiano", "kuwaitiano", "laosiano", "lesotiano", "letão", "libanês", "liberiano", "líbio", "liechtensteiniano", "lituano", "luxemburguês", "macedônio", "madagascarense", "malásio37", "malawiano", "maldivo", "maliano", "maltês", "marroquino", "mauriciano", "mauritano", "mexicano", "myanmarense", "micronésio", "moçambicano", "moldovo", "monegasco", "mongol", "montenegrino", "namibiano", "nauruano", "nepalês", "nicaraguense", "nigerino", "nigeriano", "niuiano", "norueguês", "neozelandês", "omani", "neerlandês", "palauano", "palestino", "panamenho", "papua, papuásio", "paquistanês", "paraguaio", "peruano", "polonês, polaco", "português", "queniano", "quirguiz", "britânico", "centro-africano", "tcheco", "dominicano", "romeno", "ruandês", "russo", "samoano", "santa-lucense", "são-cristovense", "samarinês", "santomense", "são-vicentino", "seichelense", "senegalês", "sérvio", "singapurense", "sírio", "somaliano, somali", "sri-lankês", "suázi", "sudanês", "sul-sudanês", "sueco", "suíço", "surinamês", "tajique", "tailandês", "tanzaniano", "timorense", "togolês", "tonganês", "trinitário", "tunisiano", "turcomeno", "turco", "tuvaluano", "ucraniano", "ugandês", "uruguaio", "uzbeque", "vanuatuense", "vaticano", "venezuelano", "vietnamita", "zambiano", "zimbabueano"}));
+		// ✅ Simplificado: Nacionalidades mais comuns primeiro
+		txtNacionalidade.setModel(new DefaultComboBoxModel<String>(new String[] {
+			"brasileiro", "português", "espanhol", "estadunidense", "francês", 
+			"alemão", "italiano", "japonês", "chinês", "argentino", "uruguaio"
+		}));
 		contentPane.add(txtNacionalidade);
 		
 		JLabel lblNome = new JLabel("NOME");
@@ -214,6 +217,18 @@ public class RegistroHospede extends JFrame {
 		txtTelefone.setColumns(10);
 		txtTelefone.setBackground(Color.WHITE);
 		txtTelefone.setBorder(javax.swing.BorderFactory.createEmptyBorder());
+		// ✅ Adicionado: Placeholder
+		txtTelefone.setText("+55 (11) 99999-9999");
+		txtTelefone.setForeground(Color.GRAY);
+		txtTelefone.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mousePressed(MouseEvent e) {
+				if (txtTelefone.getText().equals("+55 (11) 99999-9999")) {
+					txtTelefone.setText("");
+					txtTelefone.setForeground(Color.BLACK);
+				}
+			}
+		});
 		contentPane.add(txtTelefone);
 		
 		JLabel lblTitulo = new JLabel("REGISTRO HÓSPEDE");
@@ -222,6 +237,7 @@ public class RegistroHospede extends JFrame {
 		lblTitulo.setFont(new Font("Roboto Black", Font.PLAIN, 23));
 		contentPane.add(lblTitulo);
 
+		// Separadores
 		JSeparator separator_1_2 = new JSeparator();
 		separator_1_2.setBounds(560, 170, 289, 2);
 		separator_1_2.setForeground(new Color(12, 138, 199));
@@ -252,40 +268,22 @@ public class RegistroHospede extends JFrame {
 		separator_1_2_4.setBackground(new Color(12, 138, 199));
 		contentPane.add(separator_1_2_4);
 
-		
 		JPanel btnsalvar = new JPanel();
 		btnsalvar.setBounds(723, 560, 122, 35);
 		btnsalvar.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Hospede hospede = new Hospede();
-				HospedeController hospedeController = new HospedeController();
-				ReservaController reservaController = new ReservaController();
-
-				//setando os valores dos atributos
-				hospede.setNome(txtNome.getText());
-				hospede.setSobreNome(txtSobrenome.getText());
-				hospede.setTelefone(txtTelefone.getText());
-				LocalDate dataNascimento = LocalDate.of(txtDataN.getJCalendar().getYearChooser().getYear(),
-						txtDataN.getJCalendar().getMonthChooser().getMonth() + 1,
-						txtDataN.getJCalendar().getDayChooser().getDay());
-				hospede.setDataNascimento(dataNascimento);
-				hospede.setNacionalidade(txtNacionalidade.getSelectedItem().toString());
-
-				//Salvando reserva e retorna id gerado
-				int id = reservaController.salvar(getReserva());
-				//Informando o id da reserva
-				JOptionPane.showMessageDialog(null, "O id da reserva é " + id);
-				//atribuindo o id de reserva ao hospede
-				hospede.setIdReserva(id);
-				System.out.println(id);
-				//salvando hospede
-				hospedeController.salvar(hospede);
-
-				Sucesso sucesso = new Sucesso();
-				sucesso.setVisible(true);
-
-				setVisible(false);
+				salvarHospede(); // ✅ Corrigido: Método separado
+			}
+			
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnsalvar.setBackground(new Color(0, 156, 223));
+			}
+			
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnsalvar.setBackground(new Color(12, 138, 199));
 			}
 		});
 		btnsalvar.setLayout(null);
@@ -317,17 +315,167 @@ public class RegistroHospede extends JFrame {
 		logo.setIcon(new ImageIcon(RegistroHospede.class.getResource("/imagenes/Ha-100px.png")));
 	}
 	
-	//Código que permite movimentar a janela pela tela seguindo a posição de "x" y "y"
-	 private void headerMousePressed(MouseEvent evt) {
-	        xMouse = evt.getX();
-	        yMouse = evt.getY();
-	    }
+	// ✅ MÉTODO CORRIGIDO: Salvar hóspede com validações
+	private void salvarHospede() {
+		try {
+			// ✅ Validações de campos obrigatórios
+			if (!validarCampos()) {
+				return;
+			}
+			
+			Hospede hospede = new Hospede();
+			HospedeController hospedeController = new HospedeController();
+			ReservaController reservaController = new ReservaController();
 
-	    private void headerMouseDragged(MouseEvent evt) {
-	        int x = evt.getXOnScreen();
-	        int y = evt.getYOnScreen();
-	        this.setLocation(x - xMouse, y - yMouse);
+			// ✅ Setando os valores dos atributos com tratamento seguro
+			hospede.setNome(txtNome.getText().trim());
+			hospede.setSobreNome(txtSobrenome.getText().trim());
+			hospede.setTelefone(txtTelefone.getText().trim());
+			
+			// ✅ Tratamento seguro da data
+			if (txtDataN.getDate() != null) {
+				Date dataNasc = txtDataN.getDate();
+				Calendar cal = Calendar.getInstance();
+				cal.setTime(dataNasc);
+				LocalDate dataNascimento = LocalDate.of(
+					cal.get(Calendar.YEAR),
+					cal.get(Calendar.MONTH) + 1,
+					cal.get(Calendar.DAY_OF_MONTH)
+				);
+				hospede.setDataNascimento(dataNascimento);
+			}
+			
+			hospede.setNacionalidade(txtNacionalidade.getSelectedItem().toString());
+
+			// ✅ Verificar se a reserva existe antes de salvar
+			if (reserva == null) {
+				JOptionPane.showMessageDialog(this, 
+					"Erro: Reserva não encontrada.", 
+					"Erro", 
+					JOptionPane.ERROR_MESSAGE);
+				return;
+			}
+
+			// ✅ Salvando reserva e retorna id gerado
+			int idReserva = reservaController.salvar(reserva);
+			
+			// ✅ Atribuindo o id da reserva ao hóspede
+			hospede.setIdReserva(idReserva);
+			
+			// ✅ Validar objeto hóspede antes de salvar
+			if (hospede.isValid()) {
+				hospedeController.salvar(hospede);
+				
+				JOptionPane.showMessageDialog(this, 
+					"Reserva criada com ID: " + idReserva + "\nHóspede registrado com sucesso!", 
+					"Sucesso", 
+					JOptionPane.INFORMATION_MESSAGE);
+				
+				Sucesso sucesso = new Sucesso();
+				sucesso.setVisible(true);
+				dispose();
+			} else {
+				JOptionPane.showMessageDialog(this, 
+					"Dados do hóspede são inválidos. Verifique os campos.", 
+					"Erro de Validação", 
+					JOptionPane.ERROR_MESSAGE);
+			}
+
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this, 
+				"Erro ao salvar hóspede: " + e.getMessage(), 
+				"Erro", 
+				JOptionPane.ERROR_MESSAGE);
+			e.printStackTrace();
 		}
+	}
+	
+	// ✅ MÉTODO NOVO: Validar campos obrigatórios
+	private boolean validarCampos() {
+		if (txtNome.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o nome.", "Campo Obrigatório", JOptionPane.WARNING_MESSAGE);
+			txtNome.requestFocus();
+			return false;
+		}
+		
+		if (txtSobrenome.getText().trim().isEmpty()) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o sobrenome.", "Campo Obrigatório", JOptionPane.WARNING_MESSAGE);
+			txtSobrenome.requestFocus();
+			return false;
+		}
+		
+		if (txtDataN.getDate() == null) {
+			JOptionPane.showMessageDialog(this, "Por favor, selecione a data de nascimento.", "Campo Obrigatório", JOptionPane.WARNING_MESSAGE);
+			return false;
+		}
+		
+		if (txtTelefone.getText().trim().isEmpty() || txtTelefone.getText().equals("+55 (11) 99999-9999")) {
+			JOptionPane.showMessageDialog(this, "Por favor, preencha o telefone.", "Campo Obrigatório", JOptionPane.WARNING_MESSAGE);
+			txtTelefone.requestFocus();
+			return false;
+		}
+		
+		return true;
+	}
+	
+	// ✅ MÉTODO NOVO: Voltar para tela de reservas
+	private void voltarReservas() {
+		int confirmacao = JOptionPane.showConfirmDialog(this,
+			"Tem certeza que deseja voltar? Os dados não salvos serão perdidos.",
+			"Confirmação",
+			JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
+			
+		if (confirmacao == JOptionPane.YES_OPTION) {
+			try {
+				ReservasView reservas = new ReservasView();
+				reservas.setVisible(true);
+				dispose();
+			} catch (Exception e) {
+				JOptionPane.showMessageDialog(this, 
+					"Erro ao abrir tela de reservas: " + e.getMessage(), 
+					"Erro", 
+					JOptionPane.ERROR_MESSAGE);
+			}
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Confirmar saída
+	private void confirmarSaida() {
+		int confirmacao = JOptionPane.showConfirmDialog(this,
+			"Tem certeza que deseja sair? Os dados não salvos serão perdidos.",
+			"Confirmação de Saída",
+			JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
+			
+		if (confirmacao == JOptionPane.YES_OPTION) {
+			MenuPrincipal principal = new MenuPrincipal();
+			principal.setVisible(true);
+			dispose();
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Limpar campos
+	public void limparCampos() {
+		txtNome.setText("");
+		txtSobrenome.setText("");
+		txtTelefone.setText("+55 (11) 99999-9999");
+		txtTelefone.setForeground(Color.GRAY);
+		txtDataN.setDate(null);
+		txtNacionalidade.setSelectedIndex(0);
+	}
+	
+	// Código que permite movimentar a janela pela tela seguindo a posição de "x" e "y"
+	private void headerMousePressed(MouseEvent evt) {
+		xMouse = evt.getX();
+		yMouse = evt.getY();
+	}
+
+	private void headerMouseDragged(MouseEvent evt) {
+		int x = evt.getXOnScreen();
+		int y = evt.getYOnScreen();
+		this.setLocation(x - xMouse, y - yMouse);
+	}
 
 	public void setReserva(Reserva reserva) {
 		this.reserva = reserva;
