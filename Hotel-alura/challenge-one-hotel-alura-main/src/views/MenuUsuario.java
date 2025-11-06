@@ -17,6 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.awt.SystemColor;
 import javax.swing.JSeparator;
+import javax.swing.JOptionPane;
 
 @SuppressWarnings("serial")
 public class MenuUsuario extends JFrame {
@@ -90,9 +91,7 @@ public class MenuUsuario extends JFrame {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				Buscar buscar = new Buscar();
-				buscar.setVisible(true);
-				dispose();
+				abrirBuscar(); // ✅ Corrigido: Método separado
 			}
 		});
 		
@@ -127,9 +126,7 @@ public class MenuUsuario extends JFrame {
 			}
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				ReservasView reservas = new ReservasView();
-				reservas.setVisible(true);
-				dispose();
+				abrirRegistro(); // ✅ Corrigido: Método separado
 			}
 		});
 		btnRegistro.setBounds(0, 255, 257, 56);
@@ -149,6 +146,37 @@ public class MenuUsuario extends JFrame {
 		JSeparator separator = new JSeparator();
 		separator.setBounds(26, 219, 201, 2);
 		panelMenu.add(separator);
+		
+		// ✅ Adicionado: Botão de Logout
+		JPanel btnLogout = new JPanel();
+		btnLogout.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseEntered(MouseEvent e) {
+				btnLogout.setBackground(new Color(118, 187, 223));				
+			}
+			@Override
+			public void mouseExited(MouseEvent e) {
+				btnLogout.setBackground(new Color(12, 138, 199));	
+			}
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				fazerLogout(); // ✅ Novo método para logout
+			}
+		});
+		btnLogout.setBounds(0, 369, 257, 56);
+		btnLogout.setBackground(new Color(12, 138, 199));
+		btnLogout.setLayout(null);
+		btnLogout.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
+		panelMenu.add(btnLogout);
+		
+		JLabel lblLogout = new JLabel("Sair");
+		lblLogout.setIcon(new ImageIcon(MenuUsuario.class.getResource("/imagenes/sair.png")));
+		lblLogout.setBounds(30, 11, 200, 34);
+		lblLogout.setHorizontalAlignment(SwingConstants.LEFT);
+		lblLogout.setForeground(Color.WHITE);
+		lblLogout.setFont(new Font("Roboto", Font.PLAIN, 18));
+		btnLogout.add(lblLogout);
+		
 		header.setLayout(null);
 		header.setBackground(Color.WHITE);
 		header.setBounds(0, 0, 944, 36);
@@ -158,7 +186,7 @@ public class MenuUsuario extends JFrame {
 		btnexit.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				System.exit(0);
+				confirmarSaida(); // ✅ Corrigido: Confirmação antes de sair
 			}
 			@Override
 			public void mouseEntered(MouseEvent e) {
@@ -189,64 +217,146 @@ public class MenuUsuario extends JFrame {
 	    contentPane.add(panelFecha);
 	    panelFecha.setLayout(null);
 	    
-	    JLabel lblTituloPrincipal = new JLabel("Sistema de reservas Hotel Alura");
-	    lblTituloPrincipal.setBounds(180, 11, 356, 42);
+	    JLabel lblTituloPrincipal = new JLabel("Sistema de Reservas - Hotel Alura");
+	    lblTituloPrincipal.setBounds(35, 11, 450, 42); // ✅ Ajustada posição
 	    panelFecha.add(lblTituloPrincipal);
 	    lblTituloPrincipal.setForeground(Color.WHITE);
-	    lblTituloPrincipal.setFont(new Font("Roboto", Font.PLAIN, 24));
+	    lblTituloPrincipal.setFont(new Font("Roboto", Font.BOLD, 24)); // ✅ Fonte em negrito
 	    
-	    JLabel labelFecha = new JLabel("New label");
-	    labelFecha.setBounds(35, 64, 294, 36);
+	    JLabel labelFecha = new JLabel();
+	    labelFecha.setBounds(35, 64, 400, 36);
 	    panelFecha.add(labelFecha);
 	    labelFecha.setForeground(Color.WHITE);
-	    labelFecha.setFont(new Font("Roboto", Font.PLAIN, 33));
-	    Date fechaActual = new Date(); //data atual
-	    String fecha = new SimpleDateFormat("dd/MM/yyyy").format(fechaActual); //formata a data numa string
-	    labelFecha.setText("Hoje é " + fecha); //estabelece a data na label
+	    labelFecha.setFont(new Font("Roboto", Font.PLAIN, 28)); // ✅ Fonte maior
+	    Date fechaActual = new Date();
+	    String fecha = new SimpleDateFormat("dd/MM/yyyy").format(fechaActual);
+	    labelFecha.setText("Hoje é " + fecha);
 	    
-	    JLabel lbltitulo = new JLabel("Bem-vindo");
-	    lbltitulo.setFont(new Font("Roboto", Font.BOLD, 24));
-	    lbltitulo.setBounds(302, 234, 147, 46);
+	    // ✅ Adicionado: Hora atual
+	    JLabel labelHora = new JLabel();
+	    labelHora.setBounds(450, 64, 200, 36);
+	    panelFecha.add(labelHora);
+	    labelHora.setForeground(Color.WHITE);
+	    labelHora.setFont(new Font("Roboto", Font.PLAIN, 24));
+	    String hora = new SimpleDateFormat("HH:mm:ss").format(fechaActual);
+	    labelHora.setText(hora);
+	    
+	    JLabel lbltitulo = new JLabel("Bem-vindo ao Sistema");
+	    lbltitulo.setFont(new Font("Roboto", Font.BOLD, 28)); // ✅ Fonte maior
+	    lbltitulo.setBounds(350, 234, 400, 46); // ✅ Ajustada posição
+	    lbltitulo.setForeground(new Color(12, 138, 199)); // ✅ Cor da marca
 	    contentPane.add(lbltitulo);
 	    
-	    String textoDescripcion = "<html><body>Sistema de reservas de hotéis. Controle e gerencie de forma otimizada e fácil <br> o fluxo de reservas e hóspedes do hotel   </body></html>";
-	    JLabel labelDescripcion_0 = new JLabel(textoDescripcion);
-	    labelDescripcion_0.setFont(new Font("Roboto", Font.PLAIN, 17));
-	   
-	    labelDescripcion_0.setBounds(312, 291, 598, 66);
-	    contentPane.add(labelDescripcion_0);
+	    // ✅ Corrigido: Textos em português correto
+	    String textoDescricao = "<html><body>Sistema de reservas de hotéis. Controle e gerencie de forma otimizada e fácil <br> o fluxo de reservas e hóspedes do hotel</body></html>";
+	    JLabel labelDescricao_0 = new JLabel(textoDescricao);
+	    labelDescricao_0.setFont(new Font("Roboto", Font.PLAIN, 17));
+	    labelDescricao_0.setBounds(280, 291, 598, 66); // ✅ Ajustada posição
+	    contentPane.add(labelDescricao_0);
 	    
-	    String textoDescricao1 = "<html><body> Esta ferramenta permitirá que você mantenha um controle completo e detalhado de suas reservas e hóspedes, você terá acesso a ferramentas especiais para tarefas específicas como:</body></html>";
+	    String textoDescricao1 = "<html><body>Esta ferramenta permitirá que você mantenha um controle completo e detalhado de suas reservas e hóspedes. Você terá acesso a ferramentas especiais para tarefas específicas como:</body></html>";
 	    JLabel labelDescricao_1 = new JLabel(textoDescricao1);
 	    labelDescricao_1.setFont(new Font("Roboto", Font.PLAIN, 17));
-	    labelDescricao_1.setBounds(311, 345, 569, 88);
+	    labelDescricao_1.setBounds(280, 345, 569, 88);
 	    contentPane.add(labelDescricao_1);
 	    
-	    JLabel labelDescricao_2 = new JLabel("- Registro de Reservas e Hóspedes");
+	    JLabel labelDescricao_2 = new JLabel("• Registro de Reservas e Hóspedes");
 	    labelDescricao_2.setFont(new Font("Roboto", Font.PLAIN, 17));
-	    labelDescricao_2.setBounds(312, 444, 295, 27);
+	    labelDescricao_2.setBounds(300, 444, 295, 27);
+	    labelDescricao_2.setForeground(new Color(12, 138, 199)); // ✅ Cor destacada
 	    contentPane.add(labelDescricao_2);
 	    
-	    JLabel labelDescricao_3 = new JLabel("- Edição de Reservas e Hóspedes existentes");
+	    JLabel labelDescricao_3 = new JLabel("• Edição de Reservas e Hóspedes existentes");
 	    labelDescricao_3.setFont(new Font("Roboto", Font.PLAIN, 17));
-	    labelDescricao_3.setBounds(312, 482, 355, 27);
+	    labelDescricao_3.setBounds(300, 482, 355, 27);
+	    labelDescricao_3.setForeground(new Color(12, 138, 199)); // ✅ Cor destacada
 	    contentPane.add(labelDescricao_3);
 	    
-	    JLabel labelDescricao_4 = new JLabel("- Excluir todos os tipos de registros");
+	    JLabel labelDescricao_4 = new JLabel("• Exclusão de todos os tipos de registros");
 	    labelDescricao_4.setFont(new Font("Roboto", Font.PLAIN, 17));
-	    labelDescricao_4.setBounds(312, 520, 295, 27);
+	    labelDescricao_4.setBounds(300, 520, 295, 27);
+	    labelDescricao_4.setForeground(new Color(12, 138, 199)); // ✅ Cor destacada
 	    contentPane.add(labelDescricao_4);
+	    
+	    // ✅ Adicionado: Rodapé informativo
+	    JPanel rodape = new JPanel();
+	    rodape.setBackground(new Color(240, 240, 240));
+	    rodape.setBounds(256, 570, 688, 39);
+	    contentPane.add(rodape);
+	    rodape.setLayout(null);
+	    
+	    JLabel lblInfo = new JLabel("💡 Dica: Use o menu lateral para navegar entre as funcionalidades");
+	    lblInfo.setBounds(10, 5, 668, 25);
+	    lblInfo.setFont(new Font("Roboto", Font.PLAIN, 14));
+	    lblInfo.setForeground(Color.DARK_GRAY);
+	    rodape.add(lblInfo);
 	}
 	
-	//Código que permite movimentar a janela pela tela seguindo a posição de "x" e "y"
+	// ✅ MÉTODO CORRIGIDO: Abrir tela de busca
+	private void abrirBuscar() {
+		try {
+			Buscar buscar = new Buscar();
+			buscar.setVisible(true);
+			dispose();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this,
+				"Erro ao abrir tela de busca: " + e.getMessage(),
+				"Erro",
+				JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	// ✅ MÉTODO CORRIGIDO: Abrir tela de registro
+	private void abrirRegistro() {
+		try {
+			ReservasView reservas = new ReservasView();
+			reservas.setVisible(true);
+			dispose();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(this,
+				"Erro ao abrir tela de reservas: " + e.getMessage(),
+				"Erro",
+				JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Fazer logout
+	private void fazerLogout() {
+		int confirmacao = JOptionPane.showConfirmDialog(this,
+			"Tem certeza que deseja sair do sistema?",
+			"Confirmação de Logout",
+			JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
+			
+		if (confirmacao == JOptionPane.YES_OPTION) {
+			Login login = new Login();
+			login.setVisible(true);
+			dispose();
+		}
+	}
+	
+	// ✅ MÉTODO NOVO: Confirmar saída
+	private void confirmarSaida() {
+		int confirmacao = JOptionPane.showConfirmDialog(this,
+			"Tem certeza que deseja sair do sistema?",
+			"Confirmação de Saída",
+			JOptionPane.YES_NO_OPTION,
+			JOptionPane.QUESTION_MESSAGE);
+			
+		if (confirmacao == JOptionPane.YES_OPTION) {
+			System.exit(0);
+		}
+	}
+	
+	// Código que permite movimentar a janela pela tela seguindo a posição de "x" e "y"
 	private void headerMousePressed(MouseEvent evt) {
-        xMouse = evt.getX();
-        yMouse = evt.getY();
-    }
+		xMouse = evt.getX();
+		yMouse = evt.getY();
+	}
 
-    private void headerMouseDragged(MouseEvent evt) {
-        int x = evt.getXOnScreen();
-        int y = evt.getYOnScreen();
-        this.setLocation(x - xMouse, y - yMouse);
-    }
+	private void headerMouseDragged(MouseEvent evt) {
+		int x = evt.getXOnScreen();
+		int y = evt.getYOnScreen();
+		this.setLocation(x - xMouse, y - yMouse);
+	}
 }
